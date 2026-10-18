@@ -1,0 +1,93 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-[#030712] text-slate-100 antialiased selection:bg-cyan-500 selection:text-black;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #070d1e;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #1e3575;
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #00f6ff;
+  }
+}
+
+/* Glassmorphism Panels */
+.glass-panel {
+  background: rgba(12, 22, 51, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 246, 255, 0.15);
+}
+
+.glass-panel-glow {
+  background: rgba(12, 22, 51, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 246, 255, 0.35);
+  box-shadow: 0 0 20px rgba(0, 246, 255, 0.15);
+}
+
+.glass-card {
+  background: rgba(7, 13, 30, 0.8);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.25s ease-in-out;
+}
+
+.glass-card:hover {
+  border-color: rgba(0, 246, 255, 0.4);
+  box-shadow: 0 0 15px rgba(0, 246, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Sci-fi Scanline Effect */
+.scanlines {
+  position: relative;
+}
+.scanlines::after {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+  background-size: 100% 4px;
+  z-index: 10;
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+/* Neon Text Glows */
+.text-glow-cyan {
+  text-shadow: 0 0 10px rgba(0, 246, 255, 0.6), 0 0 20px rgba(0, 246, 255, 0.3);
+}
+
+.text-glow-purple {
+  text-shadow: 0 0 10px rgba(168, 85, 247, 0.6), 0 0 20px rgba(168, 85, 247, 0.3);
+}
+
+.text-glow-gold {
+  text-shadow: 0 0 10px rgba(245, 158, 11, 0.6), 0 0 20px rgba(245, 158, 11, 0.3);
+}
+
+/* Pulsing energy border */
+@keyframes energyPulse {
+  0%, 100% { border-color: rgba(0, 246, 255, 0.3); }
+  50% { border-color: rgba(0, 246, 255, 0.8); }
+}
+
+.energy-border {
+  animation: energyPulse 3s infinite ease-in-out;
+}

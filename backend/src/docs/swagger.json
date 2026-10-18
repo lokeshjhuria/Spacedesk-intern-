@@ -1,0 +1,138 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "SPACE SHOOTER ODYSSEY - REST API",
+    "version": "1.0.0",
+    "description": "Server-Authoritative REST API for Space Shooter Odyssey with VELoop Rewards Platform Integration"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000/api/v1",
+      "description": "Local Development Server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "summary": "Register a new pilot account",
+        "tags": ["Authentication"]
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "Authorize pilot credentials and receive JWT",
+        "tags": ["Authentication"]
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "summary": "Fetch current pilot user, profile, and wallet data",
+        "tags": ["Authentication"]
+      }
+    },
+    "/missions": {
+      "get": {
+        "summary": "List all 50 missions with player completion status",
+        "tags": ["Missions"]
+      }
+    },
+    "/missions/{id}/start": {
+      "post": {
+        "summary": "Start a validated mission session",
+        "tags": ["Missions"]
+      }
+    },
+    "/missions/{id}/complete": {
+      "post": {
+        "summary": "Submit completed mission metrics for anti-cheat validation and claim rewards",
+        "tags": ["Missions"]
+      }
+    },
+    "/ships": {
+      "get": {
+        "summary": "List all 5 ship classes with ownership status",
+        "tags": ["Ships"]
+      }
+    },
+    "/ships/{id}/unlock": {
+      "post": {
+        "summary": "Commission/unlock a ship class",
+        "tags": ["Ships"]
+      }
+    },
+    "/ships/{id}/equip": {
+      "post": {
+        "summary": "Equip an owned ship as active combat vessel",
+        "tags": ["Ships"]
+      }
+    },
+    "/upgrades": {
+      "get": {
+        "summary": "List all ship upgrade systems",
+        "tags": ["Upgrades"]
+      }
+    },
+    "/upgrades/purchase": {
+      "post": {
+        "summary": "Purchase an upgrade level",
+        "tags": ["Upgrades"]
+      }
+    },
+    "/wallet": {
+      "get": {
+        "summary": "Get wallet balances (Credits, Energy Cores, XP, VELoop Coins)",
+        "tags": ["Wallet"]
+      }
+    },
+    "/wallet/transactions": {
+      "get": {
+        "summary": "Get wallet transaction ledger history",
+        "tags": ["Wallet"]
+      }
+    },
+    "/wallet/streak": {
+      "get": {
+        "summary": "Get daily login streak status",
+        "tags": ["Wallet"]
+      }
+    },
+    "/wallet/daily/claim": {
+      "post": {
+        "summary": "Claim daily login streak bonus",
+        "tags": ["Wallet"]
+      }
+    },
+    "/leaderboard": {
+      "get": {
+        "summary": "Get server-verified player rankings",
+        "tags": ["Leaderboard"]
+      }
+    },
+    "/achievements": {
+      "get": {
+        "summary": "List all achievements with progress and claim states",
+        "tags": ["Achievements"]
+      }
+    },
+    "/events": {
+      "get": {
+        "summary": "List active limited-time game events",
+        "tags": ["Events"]
+      }
+    }
+  }
+}
