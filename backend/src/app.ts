@@ -53,8 +53,9 @@ app.get('/api/health', (req, res) => {
 // Swagger API Documentation
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-// API v1 Routes
+// API Routes (support both /api/v1 and /api for compatibility)
 app.use('/api/v1', apiRouter);
+app.use('/api', apiRouter);
 
 // Centralized Error Handler
 app.use(errorHandler);
