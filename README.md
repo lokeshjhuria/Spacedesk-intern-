@@ -147,6 +147,39 @@ npm test
 
 All 24 backend tests pass (auth, missions, anti-cheat, wallet, leaderboard).
 
+## 🐳 Production Deployment
+
+### Option 1: Docker Compose (One-command Full-Stack Deployment)
+To run both backend and frontend inside optimized production containers:
+```bash
+docker-compose up --build -d
+```
+- Frontend will be available at: `http://localhost` (Port 80)
+- Backend API will be available at: `http://localhost:5000` (and proxied via Nginx at `/api/`)
+
+### Option 2: Cloud / PaaS Hosting (Vercel, Render, Railway, DigitalOcean)
+
+#### Backend Deployment (e.g. Render / Railway / AWS):
+1. **Root Directory:** `backend`
+2. **Build Command:** `npm run build`
+3. **Start Command:** `npm run start`
+4. **Environment Variables:**
+   - `NODE_ENV=production`
+   - `PORT=5000` (or system default)
+   - `CLIENT_ORIGIN=https://<your-frontend-domain>.vercel.app`
+   - `JWT_SECRET=<strong-random-key>`
+   - `MONGODB_URI=<your-mongodb-atlas-uri>` (Optional: defaults to in-memory if empty)
+
+#### Frontend Deployment (e.g. Vercel / Netlify / Cloudflare Pages):
+1. **Root Directory:** `frontend`
+2. **Framework Preset:** Vite
+3. **Build Command:** `npm run build`
+4. **Output Directory:** `dist`
+5. **Environment Variables:**
+   - `VITE_API_BASE_URL=https://<your-backend-domain>/api` (or `/api` if using reverse proxy)
+
+---
+
 ## 📝 Environment Variables
 
 ### Backend (`backend/.env`)

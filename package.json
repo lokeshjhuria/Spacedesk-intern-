@@ -1,13 +1,15 @@
 {
-  "name": "space-shooter-odyssey-root",
+  "name": "space-shooter-odyssey",
   "version": "1.0.0",
   "private": true,
+  "description": "Full-Stack Browser-Based Space Shooter Odyssey with VELoop Rewards Platform",
   "scripts": {
-    "install:all": "npm --prefix backend install && npm --prefix frontend install",
-    "seed": "npm --prefix backend run seed",
-    "test": "npm --prefix backend test && npm --prefix frontend test",
-    "dev:backend": "npm --prefix backend run dev",
-    "dev:frontend": "npm --prefix frontend run dev",
-    "build": "npm --prefix backend run build && npm --prefix frontend run build"
+    "install:all": "npm install --prefix backend && npm install --prefix frontend",
+    "build:all": "npm run build --prefix backend && npm run build --prefix frontend",
+    "test:all": "npm run test --prefix backend && npm run test --prefix frontend",
+    "start:backend": "npm run start --prefix backend",
+    "preview:frontend": "npm run preview --prefix frontend",
+    "dev:backend": "npm run dev --prefix backend",
+    "dev:frontend": "npm run dev --prefix frontend"
   }
 }

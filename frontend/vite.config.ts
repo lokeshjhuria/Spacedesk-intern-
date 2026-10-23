@@ -11,6 +11,17 @@ export default defineConfig({
       '@shared': path.resolve(__dirname, '../shared')
     }
   },
+  build: {
+    chunkSizeWarningLimit: 2000,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          phaser: ['phaser'],
+          vendor: ['react', 'react-dom', 'react-router-dom', 'lucide-react']
+        }
+      }
+    }
+  },
   server: {
     port: 5173,
     proxy: {

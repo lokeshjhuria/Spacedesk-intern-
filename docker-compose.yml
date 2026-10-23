@@ -1,0 +1,36 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: space-shooter-backend
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - NODE_ENV=production
+      - CLIENT_ORIGIN=http://localhost:80
+      - MONGODB_URI=
+      - JWT_SECRET=production_secret_key_space_shooter_2026
+      - VELOOP_MODE=development_mock
+      - VELOOP_REWARDS_ENABLED=true
+    networks:
+      - odyssey-net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: space-shooter-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - odyssey-net
+
+networks:
+  odyssey-net:
+    driver: bridge
