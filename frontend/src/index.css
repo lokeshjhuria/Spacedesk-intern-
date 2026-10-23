@@ -4,7 +4,11 @@
 
 @layer base {
   body {
-    @apply bg-[#030712] text-slate-100 antialiased selection:bg-cyan-500 selection:text-black;
+    @apply bg-[#02040a] text-slate-100 antialiased selection:bg-cyan-400 selection:text-black font-rajdhani;
+    background-image: 
+      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(124, 58, 237, 0.18), transparent),
+      radial-gradient(ellipse 60% 40% at 85% 85%, rgba(0, 246, 255, 0.12), transparent);
+    background-attachment: fixed;
   }
 
   /* Custom scrollbar */
@@ -13,44 +17,52 @@
     height: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: #070d1e;
+    background: #050a18;
   }
   ::-webkit-scrollbar-thumb {
-    background: #1e3575;
-    border-radius: 3px;
+    background: linear-gradient(180deg, #23397d, #00f6ff);
+    border-radius: 4px;
   }
   ::-webkit-scrollbar-thumb:hover {
     background: #00f6ff;
   }
 }
 
-/* Glassmorphism Panels */
+/* Glassmorphism Panels with Enhanced Neon Aesthetics */
 .glass-panel {
-  background: rgba(12, 22, 51, 0.65);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(0, 246, 255, 0.15);
+  background: linear-gradient(135deg, rgba(14, 24, 56, 0.72) 0%, rgba(9, 16, 36, 0.85) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 246, 255, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45), inset 0 1px 1px 0 rgba(255, 255, 255, 0.08);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-panel:hover {
+  border-color: rgba(0, 246, 255, 0.35);
+  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.55), 0 0 20px rgba(0, 246, 255, 0.15);
 }
 
 .glass-panel-glow {
-  background: rgba(12, 22, 51, 0.75);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(0, 246, 255, 0.35);
-  box-shadow: 0 0 20px rgba(0, 246, 255, 0.15);
+  background: linear-gradient(135deg, rgba(23, 39, 84, 0.8) 0%, rgba(9, 16, 36, 0.9) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 246, 255, 0.45);
+  box-shadow: 0 0 25px rgba(0, 246, 255, 0.2), inset 0 0 15px rgba(0, 246, 255, 0.06);
 }
 
 .glass-card {
-  background: rgba(7, 13, 30, 0.8);
-  backdrop-filter: blur(8px);
+  background: linear-gradient(145deg, rgba(14, 24, 56, 0.6) 0%, rgba(5, 10, 24, 0.8) 100%);
+  backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  transition: all 0.25s ease-in-out;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .glass-card:hover {
-  border-color: rgba(0, 246, 255, 0.4);
-  box-shadow: 0 0 15px rgba(0, 246, 255, 0.2);
-  transform: translateY(-2px);
+  border-color: rgba(0, 246, 255, 0.5);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 246, 255, 0.3);
+  transform: translateY(-4px) scale(1.01);
 }
 
 /* Sci-fi Scanline Effect */
@@ -62,32 +74,68 @@
   display: block;
   position: absolute;
   top: 0; left: 0; bottom: 0; right: 0;
-  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.35) 50%);
   background-size: 100% 4px;
   z-index: 10;
   pointer-events: none;
-  opacity: 0.3;
+  opacity: 0.25;
 }
 
 /* Neon Text Glows */
 .text-glow-cyan {
-  text-shadow: 0 0 10px rgba(0, 246, 255, 0.6), 0 0 20px rgba(0, 246, 255, 0.3);
+  text-shadow: 0 0 10px rgba(0, 246, 255, 0.8), 0 0 25px rgba(0, 246, 255, 0.45);
 }
 
 .text-glow-purple {
-  text-shadow: 0 0 10px rgba(168, 85, 247, 0.6), 0 0 20px rgba(168, 85, 247, 0.3);
+  text-shadow: 0 0 10px rgba(168, 85, 247, 0.8), 0 0 25px rgba(168, 85, 247, 0.45);
 }
 
 .text-glow-gold {
-  text-shadow: 0 0 10px rgba(245, 158, 11, 0.6), 0 0 20px rgba(245, 158, 11, 0.3);
+  text-shadow: 0 0 10px rgba(251, 191, 36, 0.8), 0 0 25px rgba(251, 191, 36, 0.45);
+}
+
+.text-glow-green {
+  text-shadow: 0 0 10px rgba(52, 211, 153, 0.8), 0 0 25px rgba(52, 211, 153, 0.45);
+}
+
+/* Shimmer gradient effect for buttons & badges */
+.shimmer-badge {
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 3s infinite;
+}
+
+/* Animated cyber border */
+.cyber-border-animated {
+  position: relative;
+}
+.cyber-border-animated::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(90deg, #00f6ff, #a855f7, #00e5a3, #00f6ff);
+  background-size: 300% 300%;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: borderRotate 4s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes borderRotate {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 /* Pulsing energy border */
 @keyframes energyPulse {
-  0%, 100% { border-color: rgba(0, 246, 255, 0.3); }
-  50% { border-color: rgba(0, 246, 255, 0.8); }
+  0%, 100% { border-color: rgba(0, 246, 255, 0.35); box-shadow: 0 0 12px rgba(0, 246, 255, 0.2); }
+  50% { border-color: rgba(168, 85, 247, 0.7); box-shadow: 0 0 24px rgba(168, 85, 247, 0.35); }
 }
 
 .energy-border {
-  animation: energyPulse 3s infinite ease-in-out;
+  animation: energyPulse 3.5s infinite ease-in-out;
 }
