@@ -4,6 +4,7 @@ import { api } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import GameCanvas from '../game/GameCanvas';
+import StarBackground from '../components/StarBackground';
 import { Pause, Play, RotateCcw, LogOut, Star, Zap, Shield, Trophy } from 'lucide-react';
 
 const GamePage: React.FC = () => {
@@ -87,8 +88,9 @@ const GamePage: React.FC = () => {
     <div className="min-h-screen bg-space-950 flex flex-col">
       {/* Mission Briefing */}
       {phase === 'briefing' && (
-        <div className="flex items-center justify-center min-h-screen p-4">
-          <div className="glass-panel-glow rounded-2xl p-8 max-w-xl w-full border border-cyan-500/30">
+        <div className="relative flex items-center justify-center min-h-screen p-4 overflow-hidden">
+          <StarBackground showFighters={true} />
+          <div className="relative z-10 glass-panel-glow rounded-3xl p-8 max-w-xl w-full border border-cyan-500/40 shadow-2xl">
             <div className="text-xs font-orbitron text-slate-500 mb-1">{mission.missionId} · SECTOR {mission.sector}: {mission.sectorName}</div>
             <h1 className="font-orbitron text-xl font-bold text-white mb-2">{mission.title}</h1>
             {mission.bossConfig && (

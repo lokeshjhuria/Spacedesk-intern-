@@ -1,10 +1,12 @@
 import React, { useMemo } from 'react';
+import FighterJetFleetOverlay from './FighterJetFleetOverlay';
 
 interface StarBackgroundProps {
   className?: string;
+  showFighters?: boolean;
 }
 
-const StarBackground: React.FC<StarBackgroundProps> = ({ className = '' }) => {
+const StarBackground: React.FC<StarBackgroundProps> = ({ className = '', showFighters = true }) => {
   const stars = useMemo(() => {
     return Array.from({ length: 140 }, (_, i) => ({
       id: i,
@@ -97,6 +99,9 @@ const StarBackground: React.FC<StarBackgroundProps> = ({ className = '' }) => {
           100% { transform: translateX(-220px) translateY(220px) rotate(-45deg); opacity: 0; }
         }
       `}</style>
+
+      {/* Interactive Fighter Jets Fleet Patrol Overlay */}
+      {showFighters && <FighterJetFleetOverlay />}
     </div>
   );
 };
