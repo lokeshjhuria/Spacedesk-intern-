@@ -41,7 +41,7 @@ export const FighterJetFleetOverlay: React.FC = () => {
     };
     window.addEventListener('mousemove', handleMouseMove);
 
-    // Initialize 4 sleek orbital patrol fighter jets
+    // Initialize 4 sleek orbital patrol fighter jets with cosmic purple & quantum violet plasma trails
     fightersRef.current = [
       {
         id: 1,
@@ -53,7 +53,7 @@ export const FighterJetFleetOverlay: React.FC = () => {
         scale: 1,
         targetX: width * 0.7,
         targetY: height * 0.35,
-        trailColor: '#00f6ff'
+        trailColor: '#c084fc'
       },
       {
         id: 2,
@@ -65,7 +65,7 @@ export const FighterJetFleetOverlay: React.FC = () => {
         scale: 0.85,
         targetX: width * 0.2,
         targetY: height * 0.55,
-        trailColor: '#a855f7'
+        trailColor: '#e879f9'
       },
       {
         id: 3,
@@ -77,7 +77,7 @@ export const FighterJetFleetOverlay: React.FC = () => {
         scale: 1.15,
         targetX: width * 0.5,
         targetY: height + 100,
-        trailColor: '#38bdf8'
+        trailColor: '#a855f7'
       },
       {
         id: 4,
@@ -89,7 +89,7 @@ export const FighterJetFleetOverlay: React.FC = () => {
         scale: 0.75,
         targetX: width + 200,
         targetY: height * 0.75,
-        trailColor: '#00e5a3'
+        trailColor: '#f43f5e'
       }
     ];
 

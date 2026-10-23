@@ -8,26 +8,26 @@ export default {
     extend: {
       colors: {
         space: {
-          950: '#02040a',
-          900: '#050a18',
-          850: '#091024',
-          800: '#0e1838',
-          700: '#172754',
-          600: '#23397d',
-          500: '#3452aa'
+          950: '#07020d',
+          900: '#11051f',
+          850: '#1a0933',
+          800: '#260d4a',
+          700: '#381469',
+          600: '#4f1d91',
+          500: '#6d28d9'
         },
         cyber: {
-          cyan: '#00f6ff',
-          teal: '#00e5a3',
+          cyan: '#c084fc',
+          teal: '#e879f9',
           purple: '#a855f7',
-          violet: '#7c3aed',
-          fuchsia: '#ec4899',
-          amber: '#f59e0b',
+          violet: '#8b5cf6',
+          fuchsia: '#f43f5e',
+          amber: '#fbbf24',
           crimson: '#ef4444'
         },
         neon: {
-          cyan: '#00f6ff',
-          blue: '#38bdf8',
+          cyan: '#d8b4fe',
+          blue: '#a855f7',
           purple: '#c084fc',
           pink: '#f472b6',
           gold: '#fbbf24',

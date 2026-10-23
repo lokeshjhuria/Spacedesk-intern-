@@ -8,13 +8,13 @@ interface StarBackgroundProps {
 
 const StarBackground: React.FC<StarBackgroundProps> = ({ className = '', showFighters = true }) => {
   const stars = useMemo(() => {
-    return Array.from({ length: 140 }, (_, i) => ({
+    return Array.from({ length: 150 }, (_, i) => ({
       id: i,
       left: `${Math.random() * 100}%`,
       top: `${Math.random() * 100}%`,
       size: Math.random() < 0.75 ? 1.5 : Math.random() < 0.5 ? 2.5 : 3.5,
       opacity: 0.25 + Math.random() * 0.75,
-      color: Math.random() < 0.25 ? '#38bdf8' : Math.random() < 0.15 ? '#c084fc' : '#ffffff',
+      color: Math.random() < 0.35 ? '#d8b4fe' : Math.random() < 0.25 ? '#f472b6' : '#ffffff',
       animDuration: `${2 + Math.random() * 4}s`,
       animDelay: `${Math.random() * 5}s`
     }));
@@ -28,41 +28,41 @@ const StarBackground: React.FC<StarBackgroundProps> = ({ className = '', showFig
 
   return (
     <div className={`fixed inset-0 overflow-hidden pointer-events-none ${className}`} style={{ zIndex: 0 }}>
-      {/* Deep space base gradient */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#02040a] via-[#050a18] to-[#091024]" />
+      {/* Deep cosmic purple obsidian base gradient */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#07020d] via-[#11051f] to-[#1a0933]" />
 
-      {/* Floating Animated Nebula Clouds */}
+      {/* Floating Animated Cosmic Purple & Quantum Violet Nebula Clouds */}
       <div 
-        className="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full blur-[120px] opacity-25 animate-float-slow"
-        style={{ background: 'radial-gradient(circle, rgba(124, 58, 237, 0.45) 0%, rgba(0, 246, 255, 0.15) 50%, transparent 70%)' }}
+        className="absolute -top-32 -left-32 w-[650px] h-[650px] rounded-full blur-[130px] opacity-35 animate-float-slow"
+        style={{ background: 'radial-gradient(circle, rgba(168, 85, 247, 0.5) 0%, rgba(124, 58, 237, 0.25) 50%, transparent 70%)' }}
       />
       <div 
-        className="absolute top-1/2 -right-40 w-[550px] h-[550px] rounded-full blur-[130px] opacity-20 animate-float"
-        style={{ background: 'radial-gradient(circle, rgba(0, 246, 255, 0.4) 0%, rgba(59, 130, 246, 0.15) 50%, transparent 70%)' }}
+        className="absolute top-1/2 -right-40 w-[600px] h-[600px] rounded-full blur-[140px] opacity-30 animate-float"
+        style={{ background: 'radial-gradient(circle, rgba(217, 70, 239, 0.45) 0%, rgba(147, 51, 234, 0.2) 50%, transparent 70%)' }}
       />
       <div 
-        className="absolute -bottom-32 left-1/3 w-[500px] h-[500px] rounded-full blur-[110px] opacity-20 animate-pulse-slow"
-        style={{ background: 'radial-gradient(circle, rgba(236, 72, 153, 0.3) 0%, rgba(168, 85, 247, 0.15) 60%, transparent 70%)' }}
+        className="absolute -bottom-32 left-1/3 w-[550px] h-[550px] rounded-full blur-[120px] opacity-25 animate-pulse-slow"
+        style={{ background: 'radial-gradient(circle, rgba(244, 63, 94, 0.35) 0%, rgba(192, 132, 252, 0.2) 60%, transparent 70%)' }}
       />
 
-      {/* Grid overlay lines (subtle cyberpunk sci-fi grid) */}
+      {/* Subtle Quantum Cyber Grid Lines */}
       <div 
         className="absolute inset-0 opacity-[0.035]"
         style={{
-          backgroundImage: 'linear-gradient(to right, #00f6ff 1px, transparent 1px), linear-gradient(to bottom, #00f6ff 1px, transparent 1px)',
+          backgroundImage: 'linear-gradient(to right, #c084fc 1px, transparent 1px), linear-gradient(to bottom, #c084fc 1px, transparent 1px)',
           backgroundSize: '64px 64px'
         }}
       />
 
-      {/* Shooting Stars */}
+      {/* Shooting Stars with Violet/Magenta Plasma Tails */}
       {shootingStars.map((s, idx) => (
         <div
           key={idx}
-          className="absolute w-[120px] h-[1.5px] shooting-star"
+          className="absolute w-[130px] h-[1.5px] shooting-star"
           style={{
             top: s.top,
             left: s.left,
-            background: 'linear-gradient(90deg, rgba(0,246,255,0.8), transparent)',
+            background: 'linear-gradient(90deg, rgba(216,180,254,0.9), rgba(244,63,94,0.4), transparent)',
             animation: `shootingStarAnim ${s.duration} ease-in-out ${s.delay} infinite`,
             transform: 'rotate(-45deg)'
           }}
@@ -80,7 +80,7 @@ const StarBackground: React.FC<StarBackgroundProps> = ({ className = '', showFig
             width: `${star.size}px`,
             height: `${star.size}px`,
             backgroundColor: star.color,
-            boxShadow: star.size > 2 ? `0 0 8px ${star.color}` : 'none',
+            boxShadow: star.size > 2 ? `0 0 10px ${star.color}` : 'none',
             opacity: star.opacity,
             animation: `starPulse ${star.animDuration} ease-in-out ${star.animDelay} infinite alternate`
           }}
