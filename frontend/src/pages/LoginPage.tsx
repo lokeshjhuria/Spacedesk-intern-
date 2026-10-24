@@ -160,10 +160,17 @@ const LoginPage: React.FC = () => {
           </form>
 
           {!isRegister && (
-            <div className="mt-5 p-3.5 rounded-xl bg-space-900/90 border border-cyan-500/25 flex items-start gap-2.5">
-              <ShieldCheck size={18} className="text-cyan-400 flex-shrink-0 mt-0.5" />
+            <div 
+              onClick={() => {
+                setEmail('pilot@veloop.io');
+                setPassword('Password123!');
+              }}
+              className="mt-5 p-3.5 rounded-xl bg-space-900/90 border border-cyan-500/25 flex items-start gap-2.5 cursor-pointer hover:border-cyan-400 transition-all group"
+              title="Click to auto-fill demo credentials"
+            >
+              <ShieldCheck size={18} className="text-cyan-400 flex-shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
               <div className="text-xs text-slate-300">
-                <span className="text-slate-400 block font-mono text-[10px] uppercase">Default Flight Clearance</span>
+                <span className="text-slate-400 block font-mono text-[10px] uppercase">Default Clearance (Click to fill)</span>
                 <span className="text-cyan-300 font-mono">pilot@veloop.io</span> · <span className="text-slate-400 font-mono">Password123!</span>
               </div>
             </div>
