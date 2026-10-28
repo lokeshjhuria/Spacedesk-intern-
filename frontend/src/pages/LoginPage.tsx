@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import StarBackground from '../components/StarBackground';
-import { Eye, EyeOff, Crosshair, ArrowRight, ShieldCheck, Sparkles } from 'lucide-react';
+import { Eye, EyeOff, Crosshair, ArrowRight, ShieldCheck, Sparkles, Wifi, WifiOff, AlertTriangle } from 'lucide-react';
 
 const LoginPage: React.FC = () => {
-  const { login, register } = useAuth();
+  const { login, register, user } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
   const [isRegister, setIsRegister] = useState(false);
@@ -15,25 +15,75 @@ const LoginPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [serverStatus, setServerStatus] = useState<'checking' | 'online' | 'offline'>('checking');
+  const [errorMsg, setErrorMsg] = useState('');
+
+  // If already logged in, redirect to dashboard
+  useEffect(() => {
+    if (user) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [user, navigate]);
+
+  // Check server connectivity on mount
+  useEffect(() => {
+    const checkServer = async () => {
+      try {
+        const res = await fetch('/api/health', { signal: AbortSignal.timeout(5000) });
+        if (res.ok) {
+          const data = await res.json();
+          setServerStatus(data.status === 'online' ? 'online' : 'offline');
+        } else {
+          setServerStatus('offline');
+        }
+      } catch {
+        setServerStatus('offline');
+      }
+    };
+    checkServer();
+    // Re-check every 10 seconds if offline
+    const interval = setInterval(() => {
+      if (serverStatus === 'offline') checkServer();
+    }, 10000);
+    return () => clearInterval(interval);
+  }, [serverStatus]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMsg('');
+
+    if (serverStatus === 'offline') {
+      setErrorMsg('Server is offline. Please start the backend server first.');
+      showToast('Backend server is not running! Start it with: cd backend && npm run dev', 'error');
+      return;
+    }
+
+    if (isRegister && username.trim().length < 3) {
+      setErrorMsg('Pilot callsign must be at least 3 characters.');
+      showToast('Pilot callsign must be at least 3 characters.', 'error');
+      return;
+    }
+
+    if (password.length < 6) {
+      setErrorMsg('Password must be at least 6 characters.');
+      showToast('Password must be at least 6 characters.', 'error');
+      return;
+    }
+
     setLoading(true);
     try {
       if (isRegister) {
-        if (username.trim().length < 3) {
-          showToast('Pilot callsign must be at least 3 characters.', 'error');
-          return;
-        }
-        await register(username, email, password);
+        await register(username.trim(), email.trim(), password);
         showToast('Pilot registration successful! Welcome to the fleet.', 'success');
       } else {
-        await login(email, password);
+        await login(email.trim(), password);
         showToast('Authorization granted. Welcome back, Pilot.', 'success');
       }
       navigate('/dashboard');
     } catch (err: any) {
-      showToast(err.message || 'Authentication failed. Check your credentials.', 'error');
+      const msg = err.message || 'Authentication failed. Check your credentials.';
+      setErrorMsg(msg);
+      showToast(msg, 'error');
     } finally {
       setLoading(false);
     }
@@ -59,6 +109,29 @@ const LoginPage: React.FC = () => {
           </div>
         </div>
 
+        {/* Server Status Banner */}
+        {serverStatus === 'offline' && (
+          <div className="mb-4 p-3 rounded-xl bg-red-950/50 border border-red-500/40 flex items-center gap-2.5 animate-pulse">
+            <WifiOff size={18} className="text-red-400 flex-shrink-0" />
+            <div className="text-xs text-red-300">
+              <span className="font-bold block">Server Offline</span>
+              <span className="text-red-400/80">Start backend: <code className="text-red-300">cd backend && npm run dev</code></span>
+            </div>
+          </div>
+        )}
+        {serverStatus === 'checking' && (
+          <div className="mb-4 p-3 rounded-xl bg-yellow-950/30 border border-yellow-500/30 flex items-center gap-2.5">
+            <Wifi size={18} className="text-yellow-400 flex-shrink-0 animate-pulse" />
+            <span className="text-xs text-yellow-300">Connecting to game server...</span>
+          </div>
+        )}
+        {serverStatus === 'online' && (
+          <div className="mb-4 p-2.5 rounded-xl bg-green-950/30 border border-green-500/25 flex items-center gap-2">
+            <Wifi size={14} className="text-green-400 flex-shrink-0" />
+            <span className="text-[11px] text-green-400 font-mono">Server Online — Ready to play</span>
+          </div>
+        )}
+
         {/* Form Card */}
         <div className="glass-panel-glow rounded-3xl p-7 sm:p-9 border border-cyan-500/30 relative overflow-hidden">
           {/* Subtle Top Accent Glow Line */}
@@ -68,7 +141,7 @@ const LoginPage: React.FC = () => {
           <div className="flex p-1 mb-6 rounded-xl bg-space-900/80 border border-slate-700/60">
             <button
               type="button"
-              onClick={() => setIsRegister(false)}
+              onClick={() => { setIsRegister(false); setErrorMsg(''); }}
               className={`flex-1 py-2 rounded-lg text-xs font-orbitron font-bold uppercase tracking-wider transition-all duration-200
                 ${!isRegister ? 'bg-gradient-to-r from-cyan-500/30 to-blue-600/30 text-neon-cyan shadow-sm border border-cyan-500/40' : 'text-slate-400 hover:text-slate-200'}`}
             >
@@ -76,13 +149,21 @@ const LoginPage: React.FC = () => {
             </button>
             <button
               type="button"
-              onClick={() => setIsRegister(true)}
+              onClick={() => { setIsRegister(true); setErrorMsg(''); }}
               className={`flex-1 py-2 rounded-lg text-xs font-orbitron font-bold uppercase tracking-wider transition-all duration-200
                 ${isRegister ? 'bg-gradient-to-r from-cyan-500/30 to-blue-600/30 text-neon-cyan shadow-sm border border-cyan-500/40' : 'text-slate-400 hover:text-slate-200'}`}
             >
               Enlist
             </button>
           </div>
+
+          {/* Error Message Display */}
+          {errorMsg && (
+            <div className="mb-4 p-3 rounded-lg bg-red-950/40 border border-red-500/30 flex items-start gap-2">
+              <AlertTriangle size={16} className="text-red-400 flex-shrink-0 mt-0.5" />
+              <span className="text-xs text-red-300">{errorMsg}</span>
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {isRegister && (
@@ -96,6 +177,7 @@ const LoginPage: React.FC = () => {
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="e.g. StarCommander"
                   required
+                  minLength={3}
                   className="w-full px-4 py-3 rounded-xl bg-space-900/80 border border-slate-700/80 focus:border-cyan-400 
                     focus:outline-none focus:ring-1 focus:ring-cyan-400 text-white placeholder-slate-500 text-sm transition-all"
                 />
@@ -128,6 +210,7 @@ const LoginPage: React.FC = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Min. 6 characters"
                   required
+                  minLength={6}
                   className="w-full px-4 py-3 pr-11 rounded-xl bg-space-900/80 border border-slate-700/80 focus:border-cyan-400 
                     focus:outline-none focus:ring-1 focus:ring-cyan-400 text-white placeholder-slate-500 text-sm transition-all"
                 />
@@ -143,7 +226,7 @@ const LoginPage: React.FC = () => {
 
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || serverStatus === 'checking'}
               className="w-full py-3.5 rounded-xl font-orbitron font-bold text-sm uppercase tracking-widest
                 bg-gradient-to-r from-cyan-400 via-teal-300 to-cyan-400 hover:brightness-110 text-slate-950
                 shadow-neon-cyan transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed mt-2 flex items-center justify-center gap-2"
@@ -164,6 +247,7 @@ const LoginPage: React.FC = () => {
               onClick={() => {
                 setEmail('pilot@veloop.io');
                 setPassword('Password123!');
+                setErrorMsg('');
               }}
               className="mt-5 p-3.5 rounded-xl bg-space-900/90 border border-cyan-500/25 flex items-start gap-2.5 cursor-pointer hover:border-cyan-400 transition-all group"
               title="Click to auto-fill demo credentials"

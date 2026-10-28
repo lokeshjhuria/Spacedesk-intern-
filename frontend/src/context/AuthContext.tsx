@@ -70,10 +70,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (res.token) {
       localStorage.setItem('odyssey_token', res.token);
       setUser(res.user);
-      setProfile(res.profile);
-      setWallet(res.wallet);
-      const prog = await api.getProgress().catch(() => null);
-      if (prog?.progress) setProgress(prog.progress);
+      setProfile(res.profile || null);
+      setWallet(res.wallet || null);
+      // Fetch progress separately — don't fail login if this errors
+      try {
+        const prog = await api.getProgress();
+        if (prog?.progress) setProgress(prog.progress);
+      } catch {
+        // Progress fetch is optional — login already succeeded
+      }
+    } else {
+      throw new Error(res.error || res.message || 'Login failed — no token received');
     }
   };
 
@@ -82,10 +89,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (res.token) {
       localStorage.setItem('odyssey_token', res.token);
       setUser(res.user);
-      setProfile(res.profile);
-      setWallet(res.wallet);
-      const prog = await api.getProgress().catch(() => null);
-      if (prog?.progress) setProgress(prog.progress);
+      setProfile(res.profile || null);
+      setWallet(res.wallet || null);
+      // Fetch progress separately — don't fail registration if this errors
+      try {
+        const prog = await api.getProgress();
+        if (prog?.progress) setProgress(prog.progress);
+      } catch {
+        // Progress fetch is optional — registration already succeeded
+      }
+    } else {
+      throw new Error(res.error || res.message || 'Registration failed — no token received');
     }
   };
 

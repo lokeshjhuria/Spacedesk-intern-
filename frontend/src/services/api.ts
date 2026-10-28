@@ -10,13 +10,37 @@ function getHeaders(): HeadersInit {
 
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const url = `${API_BASE}${endpoint.startsWith('/') ? endpoint : '/' + endpoint}`;
-  const response = await fetch(url, {
-    ...options,
-    headers: {
-      ...getHeaders(),
-      ...(options.headers || {})
+
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      ...options,
+      headers: {
+        ...getHeaders(),
+        ...(options.headers || {})
+      }
+    });
+  } catch (networkErr: any) {
+    // Network error — backend is not running or unreachable
+    const error: any = new Error(
+      'Cannot connect to the game server. Please make sure the backend is running on port 5000.'
+    );
+    error.response = { data: { error: 'Network Error' }, status: 0 };
+    throw error;
+  }
+
+  // Check if we got back HTML instead of JSON (happens when backend is down and proxy returns Vite error page)
+  const contentType = response.headers.get('content-type') || '';
+  if (!contentType.includes('application/json')) {
+    if (response.status === 404) {
+      const error: any = new Error(
+        'Game server not found (404). Please make sure the backend server is running.'
+      );
+      error.response = { data: { error: 'Server not found' }, status: 404 };
+      throw error;
     }
-  });
+    // Try parsing anyway — some responses might not set content-type
+  }
 
   const data = await response.json().catch(() => ({}));
 
