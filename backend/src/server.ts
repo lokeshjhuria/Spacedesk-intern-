@@ -4,6 +4,17 @@ import { connectDB } from './config/database';
 import { Mission } from './models/Mission';
 import { runSeed } from './seeds/seed';
 
+// ─── Crash Prevention Guards ────────────────────────────────────────────────
+// Intercept uncaught exceptions and unhandled rejections to prevent process termination.
+// This guarantees the game server stays alive 24/7 even if an unexpected error occurs.
+process.on('uncaughtException', (err) => {
+  console.error('[CRASH GUARD] Uncaught Exception intercepted. Keeping server alive:', err);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('[CRASH GUARD] Unhandled Rejection intercepted. Keeping server alive:', reason);
+});
+
 async function bootstrap() {
   try {
     console.log(`[Server] Initializing ${env.GAME_TITLE}...`);
@@ -27,6 +38,7 @@ async function bootstrap() {
       console.log(`  📚 Docs:   http://localhost:${env.PORT}/api/docs`);
       console.log(`  💎 VELoop Mode: ${env.VELOOP_MODE}`);
       console.log(`  💾 Data: Persistent (survives restarts)`);
+      console.log(`  🛡️ Crash Guard: Active (24/7 uptime protection)`);
       console.log(`=======================================================`);
     });
 
@@ -42,7 +54,9 @@ async function bootstrap() {
     process.on('SIGTERM', shutdown);
   } catch (err) {
     console.error('[Server Fatal Startup Error]', err);
-    process.exit(1);
+    // Retry startup after 3 seconds rather than exiting permanently
+    console.log('[Server] Attempting automatic recovery restart in 3 seconds...');
+    setTimeout(bootstrap, 3000);
   }
 }
 

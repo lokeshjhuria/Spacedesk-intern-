@@ -13,6 +13,11 @@
     "build:all": "npm run build:backend && npm run build:frontend",
     "start": "npm run start --prefix backend",
     "deploy": "npm run install:all && npm run build:all && npm start",
+    "start:pm2": "npx pm2 start ecosystem.config.js",
+    "stop:pm2": "npx pm2 stop ecosystem.config.js",
+    "restart:pm2": "npx pm2 restart ecosystem.config.js",
+    "logs:pm2": "npx pm2 logs",
+    "status:pm2": "npx pm2 status",
     "test:all": "npm run test --prefix backend && npm run test --prefix frontend",
     "dev:backend": "npm run dev --prefix backend",
     "dev:frontend": "npm run dev --prefix frontend"
