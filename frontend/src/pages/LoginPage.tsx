@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import StarBackground from '../components/StarBackground';
-import { Eye, EyeOff, Crosshair, ArrowRight, ShieldCheck, Sparkles, Wifi, WifiOff, AlertTriangle } from 'lucide-react';
+import { Eye, EyeOff, Crosshair, ArrowRight, ShieldCheck, Sparkles, AlertTriangle } from 'lucide-react';
 
 const LoginPage: React.FC = () => {
   const { login, register, user } = useAuth();
@@ -15,7 +15,6 @@ const LoginPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [serverStatus, setServerStatus] = useState<'checking' | 'online' | 'offline'>('checking');
   const [errorMsg, setErrorMsg] = useState('');
 
   // If already logged in, redirect to dashboard
@@ -24,33 +23,6 @@ const LoginPage: React.FC = () => {
       navigate('/dashboard', { replace: true });
     }
   }, [user, navigate]);
-
-  // Check server connectivity on mount
-  useEffect(() => {
-    let mounted = true;
-    const checkServer = async () => {
-      try {
-        const res = await fetch('/api/health', { signal: AbortSignal.timeout(8000) });
-        if (res.ok) {
-          const data = await res.json();
-          if (mounted) setServerStatus(data.status === 'online' ? 'online' : 'offline');
-        } else {
-          if (mounted) setServerStatus('offline');
-        }
-      } catch {
-        if (mounted) setServerStatus('offline');
-      }
-    };
-    checkServer();
-    // Re-check every 5 seconds if offline, 30 seconds if online
-    const interval = setInterval(() => {
-      checkServer();
-    }, serverStatus === 'offline' ? 5000 : 30000);
-    return () => {
-      mounted = false;
-      clearInterval(interval);
-    };
-  }, [serverStatus]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,15 +49,11 @@ const LoginPage: React.FC = () => {
         await login(email.trim(), password);
         showToast('Authorization granted. Welcome back, Pilot.', 'success');
       }
-      setServerStatus('online');
       navigate('/dashboard');
     } catch (err: any) {
       const msg = err.message || 'Authentication failed. Check your credentials.';
       setErrorMsg(msg);
       showToast(msg, 'error');
-      if (msg.includes('Cannot connect') || msg.includes('404')) {
-        setServerStatus('offline');
-      }
     } finally {
       setLoading(false);
     }
@@ -110,29 +78,6 @@ const LoginPage: React.FC = () => {
             <span>VELoop Rewards Platform Network</span>
           </div>
         </div>
-
-        {/* Server Status Banner */}
-        {serverStatus === 'offline' && (
-          <div className="mb-4 p-3 rounded-xl bg-red-950/50 border border-red-500/40 flex items-center gap-2.5 animate-pulse">
-            <WifiOff size={18} className="text-red-400 flex-shrink-0" />
-            <div className="text-xs text-red-300">
-              <span className="font-bold block">Server Offline</span>
-              <span className="text-red-400/80">Start backend: <code className="text-red-300">cd backend && npm run dev</code></span>
-            </div>
-          </div>
-        )}
-        {serverStatus === 'checking' && (
-          <div className="mb-4 p-3 rounded-xl bg-yellow-950/30 border border-yellow-500/30 flex items-center gap-2.5">
-            <Wifi size={18} className="text-yellow-400 flex-shrink-0 animate-pulse" />
-            <span className="text-xs text-yellow-300">Connecting to game server...</span>
-          </div>
-        )}
-        {serverStatus === 'online' && (
-          <div className="mb-4 p-2.5 rounded-xl bg-green-950/30 border border-green-500/25 flex items-center gap-2">
-            <Wifi size={14} className="text-green-400 flex-shrink-0" />
-            <span className="text-[11px] text-green-400 font-mono">Server Online — Ready to play</span>
-          </div>
-        )}
 
         {/* Form Card */}
         <div className="glass-panel-glow rounded-3xl p-7 sm:p-9 border border-cyan-500/30 relative overflow-hidden">
@@ -228,7 +173,7 @@ const LoginPage: React.FC = () => {
 
             <button
               type="submit"
-              disabled={loading || serverStatus === 'checking'}
+              disabled={loading}
               className="w-full py-3.5 rounded-xl font-orbitron font-bold text-sm uppercase tracking-widest
                 bg-gradient-to-r from-cyan-400 via-teal-300 to-cyan-400 hover:brightness-110 text-slate-950
                 shadow-neon-cyan transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed mt-2 flex items-center justify-center gap-2"

@@ -21,22 +21,22 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
       }
     });
   } catch (networkErr: any) {
-    // Network error — backend is not running or unreachable
+    // Network error — backend is not reachable
     const error: any = new Error(
-      'Cannot connect to the game server. Please make sure the backend is running on port 5000.'
+      'Cannot connect to game server. Please verify network connection.'
     );
     error.response = { data: { error: 'Network Error' }, status: 0 };
     throw error;
   }
 
-  // Check if we got back HTML instead of JSON (happens when backend is down and proxy returns Vite error page)
+  // Check if we got back HTML instead of JSON (happens if proxy returns an error page)
   const contentType = response.headers.get('content-type') || '';
   if (!contentType.includes('application/json')) {
     if (response.status === 404) {
       const error: any = new Error(
-        'Game server not found (404). Please make sure the backend server is running.'
+        'Resource not found (404). Please try again.'
       );
-      error.response = { data: { error: 'Server not found' }, status: 404 };
+      error.response = { data: { error: 'Resource not found' }, status: 404 };
       throw error;
     }
     // Try parsing anyway — some responses might not set content-type
