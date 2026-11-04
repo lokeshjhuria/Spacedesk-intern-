@@ -27,36 +27,34 @@ const LoginPage: React.FC = () => {
 
   // Check server connectivity on mount
   useEffect(() => {
+    let mounted = true;
     const checkServer = async () => {
       try {
-        const res = await fetch('/api/health', { signal: AbortSignal.timeout(5000) });
+        const res = await fetch('/api/health', { signal: AbortSignal.timeout(8000) });
         if (res.ok) {
           const data = await res.json();
-          setServerStatus(data.status === 'online' ? 'online' : 'offline');
+          if (mounted) setServerStatus(data.status === 'online' ? 'online' : 'offline');
         } else {
-          setServerStatus('offline');
+          if (mounted) setServerStatus('offline');
         }
       } catch {
-        setServerStatus('offline');
+        if (mounted) setServerStatus('offline');
       }
     };
     checkServer();
-    // Re-check every 10 seconds if offline
+    // Re-check every 5 seconds if offline, 30 seconds if online
     const interval = setInterval(() => {
-      if (serverStatus === 'offline') checkServer();
-    }, 10000);
-    return () => clearInterval(interval);
+      checkServer();
+    }, serverStatus === 'offline' ? 5000 : 30000);
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
   }, [serverStatus]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg('');
-
-    if (serverStatus === 'offline') {
-      setErrorMsg('Server is offline. Please start the backend server first.');
-      showToast('Backend server is not running! Start it with: cd backend && npm run dev', 'error');
-      return;
-    }
 
     if (isRegister && username.trim().length < 3) {
       setErrorMsg('Pilot callsign must be at least 3 characters.');
@@ -79,11 +77,15 @@ const LoginPage: React.FC = () => {
         await login(email.trim(), password);
         showToast('Authorization granted. Welcome back, Pilot.', 'success');
       }
+      setServerStatus('online');
       navigate('/dashboard');
     } catch (err: any) {
       const msg = err.message || 'Authentication failed. Check your credentials.';
       setErrorMsg(msg);
       showToast(msg, 'error');
+      if (msg.includes('Cannot connect') || msg.includes('404')) {
+        setServerStatus('offline');
+      }
     } finally {
       setLoading(false);
     }
