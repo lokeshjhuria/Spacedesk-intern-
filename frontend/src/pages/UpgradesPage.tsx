@@ -55,9 +55,9 @@ const UpgradesPage: React.FC = () => {
     setLoading(true)
     try {
       const [upRes, profileRes] = await Promise.all([api.listUpgrades(), api.getProfile()])
-      setUpgrades(upRes.data.upgrades || [])
-      setPlayerUpgrades(upRes.data.playerUpgrades || [])
-      setPlayerLevel(profileRes.data.profile?.level || 1)
+      setUpgrades(upRes.upgrades || [])
+      setPlayerUpgrades(upRes.playerUpgrades || [])
+      setPlayerLevel(profileRes.profile?.level || 1)
     } catch (e: any) {
       addToast(e.response?.data?.message || 'Failed to load upgrades', 'error')
     } finally {

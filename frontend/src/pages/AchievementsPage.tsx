@@ -48,11 +48,11 @@ const AchievementsPage: React.FC = () => {
     try {
       const [achRes, dailyRes] = await Promise.all([
         api.listAchievements(),
-        api.getDailyMissions().catch(() => ({ data: { missions: [] } })),
+        api.getDailyMissions().catch(() => ({ missions: [] })),
       ])
-      setAchievements(achRes.data.achievements || [])
-      setPlayerAch(achRes.data.playerAchievements || [])
-      setDailyMissions(dailyRes.data.missions || [])
+      setAchievements(achRes.achievements || [])
+      setPlayerAch(achRes.playerAchievements || [])
+      setDailyMissions(dailyRes.missions || [])
     } catch (e: any) {
       addToast('Failed to load achievements', 'error')
     } finally {

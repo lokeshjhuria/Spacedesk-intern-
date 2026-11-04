@@ -45,11 +45,11 @@ const AdminPage: React.FC = () => {
     setLoading(true)
     try {
       const [statsRes, eventsRes] = await Promise.all([
-        api.getAdminStats().catch(() => ({ data: { stats: null } })),
+        api.getAdminStats().catch(() => ({ stats: null })),
         api.listEvents(),
       ])
-      setStats(statsRes.data.stats)
-      setEvents(eventsRes.data.events || [])
+      setStats(statsRes.stats)
+      setEvents(eventsRes.events || [])
     } catch {
       addToast('Failed to load admin data', 'error')
     } finally {

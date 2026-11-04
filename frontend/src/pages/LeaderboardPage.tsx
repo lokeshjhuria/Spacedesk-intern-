@@ -33,8 +33,8 @@ const LeaderboardPage: React.FC = () => {
     setLoading(true)
     try {
       const res = await api.getLeaderboard({ page, limit: 20, sortBy, timeframe })
-      setEntries(res.data.entries || [])
-      setTotalPages(res.data.totalPages || 1)
+      setEntries(res.entries || [])
+      setTotalPages(res.totalPages || 1)
     } catch (e: any) {
       addToast('Failed to load leaderboard', 'error')
     } finally {

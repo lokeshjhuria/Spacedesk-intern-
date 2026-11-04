@@ -4,6 +4,7 @@ import { api } from '../services/api';
 import { useToast } from '../context/ToastContext';
 import StarBackground from '../components/StarBackground';
 import { Lock, Star, Target, Clock, Zap, Shield, ChevronRight, Crosshair } from 'lucide-react';
+import NavBar from '../components/NavBar';
 
 const SECTOR_THEMES: Record<number, { name: string; color: string; gradient: string }> = {
   1: { name: 'Asteroid Frontier', color: 'text-cyan-400', gradient: 'from-cyan-900/30 to-cyan-900/10' },
@@ -45,6 +46,7 @@ const MissionsPage: React.FC = () => {
   return (
     <div className="relative min-h-screen pt-16 pb-8 px-4">
       <StarBackground />
+      <NavBar />
       <div className="relative z-10 max-w-6xl mx-auto">
         <div className="text-center mb-6 pt-4">
           <h1 className="font-orbitron text-2xl font-bold text-white">MISSION CONTROL</h1>

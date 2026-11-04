@@ -73,10 +73,10 @@ const HangarPage: React.FC = () => {
         api.listShips(),
         api.getProfile(),
       ])
-      setShips(shipsRes.data.ships || [])
-      setPlayerShips(shipsRes.data.playerShips || [])
-      setPlayerLevel(profileRes.data.profile?.level || 1)
-      if (shipsRes.data.ships?.length) setSelected(shipsRes.data.ships[0])
+      setShips(shipsRes.ships || [])
+      setPlayerShips(shipsRes.playerShips || [])
+      setPlayerLevel(profileRes.profile?.level || 1)
+      if (shipsRes.ships?.length) setSelected(shipsRes.ships[0])
     } catch (e: any) {
       addToast(e.response?.data?.message || 'Failed to load hangar', 'error')
     } finally {

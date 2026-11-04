@@ -64,8 +64,8 @@ const WalletPage: React.FC = () => {
     setLoading(true)
     try {
       const [walletRes, streakRes] = await Promise.all([api.getWallet(), api.getStreak()])
-      setWallet(walletRes.data.wallet)
-      setStreak(streakRes.data)
+      setWallet(walletRes.wallet)
+      setStreak(streakRes)
     } catch (e: any) {
       addToast('Failed to load wallet', 'error')
     } finally {
@@ -78,8 +78,8 @@ const WalletPage: React.FC = () => {
       const params: any = { page, limit: 10 }
       if (currencyFilter !== 'all') params.currency = currencyFilter
       const res = await api.getTransactions(params)
-      setTransactions(res.data.transactions || [])
-      setTotalPages(res.data.totalPages || 1)
+      setTransactions(res.transactions || [])
+      setTotalPages(res.totalPages || 1)
     } catch {}
   }
 
@@ -87,7 +87,7 @@ const WalletPage: React.FC = () => {
     setClaiming(true)
     try {
       const res = await api.claimStreak()
-      addToast(`Day ${res.data.newStreak} streak claimed! 🔥`, 'success')
+      addToast(`Day ${res.newStreak} streak claimed! 🔥`, 'success')
       await loadData()
       await loadTransactions()
     } catch (e: any) {
