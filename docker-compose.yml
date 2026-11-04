@@ -1,35 +1,31 @@
 services:
-  backend:
+  # -------------------------------------------------------------
+  # All-in-One Standalone Deployment (Recommended for simple deploy)
+  # Frontend + Backend in a single container with persistent data
+  # Access at http://localhost:5000
+  # -------------------------------------------------------------
+  app:
     build:
-      context: ./backend
+      context: .
       dockerfile: Dockerfile
-    container_name: space-shooter-backend
+    container_name: space-shooter-allinone
     restart: unless-stopped
     ports:
       - "5000:5000"
+    volumes:
+      - odyssey-data:/app/data/db
     environment:
       - PORT=5000
       - NODE_ENV=production
-      - CLIENT_ORIGIN=http://localhost:80
-      - MONGODB_URI=
       - JWT_SECRET=production_secret_key_space_shooter_2026
       - VELOOP_MODE=development_mock
       - VELOOP_REWARDS_ENABLED=true
     networks:
       - odyssey-net
 
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: space-shooter-frontend
-    restart: unless-stopped
-    ports:
-      - "80:80"
-    depends_on:
-      - backend
-    networks:
-      - odyssey-net
+volumes:
+  odyssey-data:
+    driver: local
 
 networks:
   odyssey-net:

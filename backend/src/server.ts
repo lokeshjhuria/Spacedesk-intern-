@@ -9,13 +9,13 @@ async function bootstrap() {
     console.log(`[Server] Initializing ${env.GAME_TITLE}...`);
     await connectDB();
 
-    // Auto-seed if database is empty
+    // Auto-seed if database is empty (first run only — data persists after that)
     const missionCount = await Mission.countDocuments();
     if (missionCount < 50) {
       console.log(`[Server] Found ${missionCount} missions. Running initial seed...`);
       await runSeed(false);
     } else {
-      console.log(`[Server] Database verified with ${missionCount} missions.`);
+      console.log(`[Server] Database verified with ${missionCount} missions. (Data persisted from previous run)`);
     }
 
     const server = app.listen(env.PORT, () => {
@@ -23,8 +23,10 @@ async function bootstrap() {
       console.log(`  🚀 ${env.GAME_TITLE} Backend Online`);
       console.log(`  🌐 Port: ${env.PORT}`);
       console.log(`  🔗 Health: http://localhost:${env.PORT}/api/health`);
-      console.log(`  📚 Docs: http://localhost:${env.PORT}/api/docs`);
+      console.log(`  🎮 Game:   http://localhost:${env.PORT}/`);
+      console.log(`  📚 Docs:   http://localhost:${env.PORT}/api/docs`);
       console.log(`  💎 VELoop Mode: ${env.VELOOP_MODE}`);
+      console.log(`  💾 Data: Persistent (survives restarts)`);
       console.log(`=======================================================`);
     });
 

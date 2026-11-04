@@ -149,34 +149,40 @@ All 24 backend tests pass (auth, missions, anti-cheat, wallet, leaderboard).
 
 ## 🐳 Production Deployment
 
-### Option 1: Docker Compose (One-command Full-Stack Deployment)
-To run both backend and frontend inside optimized production containers:
+### Option 1: Unified All-In-One Deployment (Recommended — Single Port, Zero Maintenance)
+The backend automatically serves both the API endpoints (`/api/*`) and the built React frontend (`/*`) as a single unified service. **All player data, accounts, and progress are stored in `./data/db/` and persist across restarts automatically!**
+
 ```bash
-docker-compose up --build -d
+# 1. Install all dependencies
+npm run install:all
+
+# 2. Build both frontend and backend
+npm run build:all
+
+# 3. Start the unified production server
+npm start
 ```
-- Frontend will be available at: `http://localhost` (Port 80)
-- Backend API will be available at: `http://localhost:5000` (and proxied via Nginx at `/api/`)
+Your full game is now live and accessible at **http://localhost:5000** (or whatever `$PORT` is set to).
+- No external MongoDB required.
+- No second frontend server required.
+- Survives restarts with persistent data on disk.
 
-### Option 2: Cloud / PaaS Hosting (Vercel, Render, Railway, DigitalOcean)
+### Option 2: Docker / Docker Compose
+Deploy everything with persistent volumes using Docker:
+```bash
+docker compose up --build -d
+```
+Access the game at `http://localhost:5000`. Game data persists safely inside the Docker volume `odyssey-data`.
 
-#### Backend Deployment (e.g. Render / Railway / AWS):
-1. **Root Directory:** `backend`
-2. **Build Command:** `npm run build`
-3. **Start Command:** `npm run start`
+### Option 3: Cloud Platforms (Render, Railway, Fly.io, Heroku)
+Deploy directly from this Git repository:
+1. **Build Command:** `npm run install:all && npm run build:all`
+2. **Start Command:** `npm start`
+3. **Persistent Disk (Optional):** Mount `/app/data/db` to retain game data across redeployments, or configure `MONGODB_URI` with MongoDB Atlas.
 4. **Environment Variables:**
    - `NODE_ENV=production`
-   - `PORT=5000` (or system default)
-   - `CLIENT_ORIGIN=https://<your-frontend-domain>.vercel.app`
-   - `JWT_SECRET=<strong-random-key>`
-   - `MONGODB_URI=<your-mongodb-atlas-uri>` (Optional: defaults to in-memory if empty)
-
-#### Frontend Deployment (e.g. Vercel / Netlify / Cloudflare Pages):
-1. **Root Directory:** `frontend`
-2. **Framework Preset:** Vite
-3. **Build Command:** `npm run build`
-4. **Output Directory:** `dist`
-5. **Environment Variables:**
-   - `VITE_API_BASE_URL=https://<your-backend-domain>/api` (or `/api` if using reverse proxy)
+   - `JWT_SECRET=<your-strong-random-secret>`
+   - `PORT=5000` (platform usually assigns this automatically via `$PORT`)
 
 ---
 

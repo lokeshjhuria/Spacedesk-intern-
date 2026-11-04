@@ -3,6 +3,8 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import swaggerUi from 'swagger-ui-express';
+import path from 'path';
+import fs from 'fs';
 import { env } from './config/env';
 import apiRouter from './routes';
 import { rateLimiter } from './middlewares/rateLimitMiddleware';
@@ -56,6 +58,33 @@ app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 // API Routes (support both /api/v1 and /api for compatibility)
 app.use('/api/v1', apiRouter);
 app.use('/api', apiRouter);
+
+// ─── Serve Frontend Static Files ───────────────────────────────────────────
+// In production (or when the frontend build exists), serve the React SPA.
+// This allows deploying as a single server — no separate frontend server needed.
+const candidateDistPaths = [
+  path.resolve(__dirname, '..', '..', 'frontend', 'dist'),
+  path.resolve(__dirname, '..', 'frontend', 'dist'),
+  path.resolve(process.cwd(), 'frontend', 'dist'),
+  path.resolve(process.cwd(), '..', 'frontend', 'dist')
+];
+const frontendDistPath = candidateDistPaths.find((p) => fs.existsSync(p));
+
+if (frontendDistPath) {
+  console.log(`[App] Serving frontend static files from: ${frontendDistPath}`);
+  app.use(express.static(frontendDistPath));
+
+  // SPA fallback: any non-API route serves index.html (for client-side routing)
+  app.get('*', (req, res) => {
+    // Don't serve index.html for API routes
+    if (req.path.startsWith('/api')) {
+      return res.status(404).json({ error: 'API endpoint not found' });
+    }
+    res.sendFile(path.join(frontendDistPath, 'index.html'));
+  });
+} else {
+  console.log(`[App] No frontend build found. Run 'npm run build' in frontend/ to enable single-server deployment.`);
+}
 
 // Centralized Error Handler
 app.use(errorHandler);
