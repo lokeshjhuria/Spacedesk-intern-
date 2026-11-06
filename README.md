@@ -174,7 +174,18 @@ docker compose up --build -d
 ```
 Access the game at `http://localhost:5000`. Game data persists safely inside the Docker volume `odyssey-data`.
 
-### Option 3: Cloud Platforms (Render, Railway, Fly.io, Heroku)
+### Option 3: Vercel Frontend Deployment (1-Click)
+Deploy the game interface directly to Vercel:
+1. Import this repository in [Vercel](https://vercel.com/new).
+2. Vercel automatically detects the configuration from [`vercel.json`](vercel.json):
+   - **Framework Preset:** Vite
+   - **Build Command:** `npm run build:frontend`
+   - **Output Directory:** `frontend/dist`
+   - **Install Command:** `npm install --prefix frontend`
+3. Click **Deploy**! The game will be live globally on Vercel's high-speed CDN.
+*(Optional: In Vercel Project Settings > Environment Variables, add `VITE_API_BASE_URL` pointing to your deployed backend URL. If not provided, the game automatically uses the local pilot session mode so all gameplay, audio, and ships work out of the box!)*
+
+### Option 4: Cloud Platforms (Render, Railway, Fly.io, Heroku)
 Deploy directly from this Git repository:
 1. **Build Command:** `npm run install:all && npm run build:all`
 2. **Start Command:** `npm start`
