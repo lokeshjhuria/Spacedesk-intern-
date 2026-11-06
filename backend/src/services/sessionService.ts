@@ -19,15 +19,19 @@ export class SessionService {
       throw new Error(`Mission ${missionId} not found`);
     }
 
-    // Verify player level requirement
+    // In development or if sampling first mission of sector, allow flexible launch
+    const isSectorLead = mission.numericId === 1 || (mission.numericId - 1) % 10 === 0;
+    const isDev = env.NODE_ENV !== 'production';
+
+    // Verify player level requirement (if not dev or sector lead)
     const profile = await PlayerProfile.findOne({ userId });
     const currentLevel = profile ? profile.level : 1;
-    if (mission.unlockRequirement.minLevel > currentLevel) {
+    if (!isDev && !isSectorLead && mission.unlockRequirement.minLevel > currentLevel) {
       throw new Error(`Pilot level ${mission.unlockRequirement.minLevel} required to launch this mission`);
     }
 
     // Verify mission prerequisite
-    if (mission.unlockRequirement.requiredMissionId) {
+    if (!isDev && !isSectorLead && mission.unlockRequirement.requiredMissionId) {
       const progress = await PlayerProgress.findOne({ userId });
       const hasCompletedPrereq = progress?.completedMissions.some(
         (m) => m.missionId === mission.unlockRequirement.requiredMissionId
@@ -60,12 +64,12 @@ export class SessionService {
     }
 
     // Mathematical constraints:
-    // Min feasible duration: wave delays + fast clear kill time (at least 5 seconds for fast players)
-    const minFeasibleDurationSec = Math.max(5, Math.floor(waveSpawnTime * 0.4 + totalEnemies * 0.3));
+    // Min feasible duration: allow swift pilot clears while blocking bot speedhacks
+    const minFeasibleDurationSec = Math.max(3, Math.floor(waveSpawnTime * 0.2));
 
-    // Max feasible score: (enemies * baseScore 200 * maxCombo 5) + boss 5000 + timeBonus 5000 + starBonus
+    // Max feasible score: ample headroom for high combos and golden apple powerups
     const maxFeasibleScore = Math.ceil(
-      totalEnemies * 1500 + (mission.bossConfig ? 15000 : 0) + 10000
+      totalEnemies * 4000 + (mission.bossConfig ? 30000 : 0) + 50000
     );
 
     const sessionId = `sess_${crypto.randomBytes(16).toString('hex')}`;

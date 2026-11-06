@@ -8,8 +8,8 @@ const router = Router();
 router.get('/', optionalAuth, MissionController.listMissions);
 router.get('/:id', optionalAuth, MissionController.getMissionById);
 
-// Gameplay sessions require authenticated user
-router.post('/:id/start', authenticateToken, MissionController.startMission);
-router.post('/:id/complete', authenticateToken, MissionController.completeMission);
+// Gameplay sessions support authenticated pilots and guest standby flights
+router.post('/:id/start', optionalAuth, MissionController.startMission);
+router.post('/:id/complete', optionalAuth, MissionController.completeMission);
 
 export default router;

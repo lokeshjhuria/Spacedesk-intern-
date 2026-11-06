@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import { useToast } from '../context/ToastContext';
@@ -37,7 +37,7 @@ const FALLBACK_MISSION_TITLES = [
   "The Final Threshold", "Ascension: Void Empress Omen"
 ];
 
-function generateFallbackMissions() {
+function generateFallbackMissions(allUnlocked = true) {
   const diffs = ['Recruit', 'Veteran', 'Elite', 'Master', 'Nightmare'];
   const ships = ['interceptor', 'guardian', 'destroyer', 'phantom', 'nova'];
 
@@ -45,8 +45,9 @@ function generateFallbackMissions() {
     const num = idx + 1;
     const sector = Math.ceil(num / 10);
     const isBoss = num % 10 === 0;
+    const isSectorLead = num === 1 || (num - 1) % 10 === 0;
     return {
-      missionId: `M-${String(num).padStart(3, '0')}`,
+      missionId: `M-${String(num).padStart(2, '0')}`,
       numericId: num,
       title: FALLBACK_MISSION_TITLES[idx] || `Mission ${num}`,
       sector,
@@ -65,7 +66,7 @@ function generateFallbackMissions() {
         veloopCoins: Math.ceil(num / 4)
       },
       bossConfig: isBoss ? { name: `Sector ${sector} Boss` } : undefined,
-      isUnlocked: num === 1,
+      isUnlocked: allUnlocked || isSectorLead,
       isCompleted: false,
       stars: 0,
       highestScore: 0
@@ -74,33 +75,55 @@ function generateFallbackMissions() {
 }
 
 const MissionsPage: React.FC = () => {
+  const [allUnlocked, setAllUnlocked] = useState<boolean>(() => {
+    const saved = localStorage.getItem('odyssey_fleet_override');
+    return saved !== null ? saved === 'true' : true; // Default true so all missions are immediately playable
+  });
   const [missions, setMissions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedSector, setSelectedSector] = useState(1);
   const { showToast } = useToast();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    api.listMissions()
+  const fetchMissions = useCallback((unlocked: boolean) => {
+    setLoading(true);
+    api.listMissions({ allUnlocked: unlocked })
       .then(res => {
         if (res && res.missions && res.missions.length > 0) {
-          setMissions(res.missions);
+          if (unlocked) {
+            setMissions(res.missions.map((m: any) => ({ ...m, isUnlocked: true })));
+          } else {
+            setMissions(res.missions);
+          }
         } else {
-          setMissions(generateFallbackMissions());
+          setMissions(generateFallbackMissions(unlocked));
         }
       })
       .catch(() => {
-        // Resilient fallback ensures missions are ALWAYS visible
-        setMissions(generateFallbackMissions());
+        setMissions(generateFallbackMissions(unlocked));
       })
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    fetchMissions(allUnlocked);
+  }, [allUnlocked, fetchMissions]);
+
+  const toggleAllUnlocked = () => {
+    const nextVal = !allUnlocked;
+    setAllUnlocked(nextVal);
+    localStorage.setItem('odyssey_fleet_override', String(nextVal));
+    showToast(
+      nextVal ? 'Fleet Command Override: All 50 missions unlocked!' : 'Sequential Campaign Mode restored.',
+      nextVal ? 'success' : 'info'
+    );
+  };
 
   const sectorMissions = missions.filter(m => m.sector === selectedSector);
 
   const handleLaunch = (mission: any) => {
     if (!mission.isUnlocked) {
-      showToast(`Mission locked. Complete previous mission to unlock.`, 'warning');
+      showToast(`Mission locked. Toggle Fleet Override above to play any mission immediately.`, 'warning');
       return;
     }
     navigate(`/game/${mission.missionId}`);
@@ -112,8 +135,23 @@ const MissionsPage: React.FC = () => {
       <NavBar />
       <div className="relative z-10 max-w-6xl mx-auto">
         <div className="text-center mb-6 pt-4">
-          <h1 className="font-orbitron text-2xl font-bold text-white">MISSION CONTROL</h1>
-          <p className="text-slate-400 text-sm mt-1">50 Missions across 5 Sectors</p>
+          <h1 className="font-orbitron text-2xl font-bold text-white tracking-wider">MISSION CONTROL</h1>
+          <p className="text-slate-400 text-sm mt-1">50 Missions across 5 Sectors · Fully Playable Campaign</p>
+
+          {/* Fleet Command Override Toggle */}
+          <div className="mt-3 flex items-center justify-center gap-3">
+            <button
+              onClick={toggleAllUnlocked}
+              className={`px-4 py-1.5 rounded-full text-xs font-orbitron font-bold transition-all border flex items-center gap-2 ${
+                allUnlocked
+                  ? 'bg-cyan-500/20 border-cyan-400 text-neon-cyan shadow-[0_0_12px_rgba(0,246,255,0.4)]'
+                  : 'bg-space-800/80 border-slate-700 text-slate-400 hover:text-white'
+              }`}
+            >
+              <Zap size={13} className={allUnlocked ? 'animate-pulse text-neon-cyan' : 'text-slate-500'} />
+              <span>{allUnlocked ? 'FLEET OVERRIDE: ALL 50 MISSIONS UNLOCKED' : 'SEQUENTIAL PROGRESSION (CLICK TO UNLOCK ALL)'}</span>
+            </button>
+          </div>
         </div>
 
         {/* Sector Selector */}

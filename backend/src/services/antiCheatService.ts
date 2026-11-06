@@ -40,7 +40,7 @@ export class AntiCheatService {
     }
 
     // 3. Physical Duration Check
-    // Prevent 0-second bot completions
+    // Prevent 0-second and 1-second bot speed hacks
     if (payload.elapsedSeconds < session.minFeasibleDurationSec) {
       flags.push('SUSPICIOUS_SPEED_HACK');
       await AuditLog.create({

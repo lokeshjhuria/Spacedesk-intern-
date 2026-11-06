@@ -151,12 +151,23 @@ export async function runSeed(closeConnectionOnFinish = false): Promise<void> {
       totalScore: 999999
     });
 
-    await PlayerProgress.create({
-      userId: adminUser._id,
-      completedMissions: [],
-      unlockedShips: ['ship_interceptor', 'ship_guardian', 'ship_destroyer', 'ship_phantom', 'ship_nova'],
-      unlockedSectors: [1, 2, 3, 4, 5]
-    });
+    const allAdminCompletedMissions = MISSIONS_SEED_DATA.map((m) => ({
+      missionId: m.missionId,
+      stars: 3,
+      highestScore: m.numericId * 4500,
+      completedAt: new Date()
+    }));
+
+    await PlayerProgress.findOneAndUpdate(
+      { userId: adminUser._id },
+      {
+        userId: adminUser._id,
+        completedMissions: allAdminCompletedMissions,
+        unlockedShips: ['ship_interceptor', 'ship_guardian', 'ship_destroyer', 'ship_phantom', 'ship_nova'],
+        unlockedSectors: [1, 2, 3, 4, 5]
+      },
+      { upsert: true, new: true }
+    );
 
     await Wallet.create({
       userId: adminUser._id,

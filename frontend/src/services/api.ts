@@ -80,7 +80,7 @@ export const api = {
   getInventory: () => request<any>('/player/inventory'),
 
   // Missions
-  listMissions: () => request<any>('/missions'),
+  listMissions: (params: any = {}) => request<any>(`/missions${buildQuery(params)}`),
   getMission: (id: string) => request<any>(`/missions/${id}`),
   startMission: (id: string) => request<any>(`/missions/${id}/start`, { method: 'POST' }),
   completeMission: (id: string, payload: any) => request<any>(`/missions/${id}/complete`, { method: 'POST', body: JSON.stringify(payload) }),
