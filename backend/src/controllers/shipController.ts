@@ -13,11 +13,11 @@ export class ShipController {
    */
   static async listShips(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
-      const userId = req.user!._id;
+      const userId = req.user ? req.user._id : null;
       const ships = await Ship.find().sort({ 'unlockRequirement.minLevel': 1 });
-      const playerShips = await PlayerShip.find({ userId });
-      const progress = await PlayerProgress.findOne({ userId });
-      const profile = await PlayerProfile.findOne({ userId });
+      const playerShips = userId ? await PlayerShip.find({ userId }) : [];
+      const progress = userId ? await PlayerProgress.findOne({ userId }) : null;
+      const profile = userId ? await PlayerProfile.findOne({ userId }) : null;
 
       const ownedMap = new Map<string, any>();
       for (const ps of playerShips) {
@@ -29,8 +29,8 @@ export class ShipController {
 
       const shipsWithStatus = ships.map((s) => {
         const owned = ownedMap.get(s.shipId);
-        const isOwned = !!owned;
-        const isEquipped = profile?.equippedShipId === s.shipId;
+        const isOwned = userId ? !!owned : s.shipId === 'ship_interceptor';
+        const isEquipped = userId ? profile?.equippedShipId === s.shipId : s.shipId === 'ship_interceptor';
 
         // Check if unlock conditions are met
         const meetsLevel = playerLevel >= s.unlockRequirement.minLevel;

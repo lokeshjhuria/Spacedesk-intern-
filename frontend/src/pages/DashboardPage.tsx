@@ -5,6 +5,7 @@ import { useToast } from '../context/ToastContext';
 import { api } from '../services/api';
 import StarBackground from '../components/StarBackground';
 import NavBar from '../components/NavBar';
+import ShipVisual from '../components/ShipVisual';
 import {
   Zap, Shield, Star, Trophy, Gift, Map, Rocket,
   Activity, Target, TrendingUp, CheckCircle, Clock, Award, Play, Sparkles, ChevronRight
@@ -85,9 +86,9 @@ const DashboardPage: React.FC = () => {
           <div className="flex flex-col md:flex-row items-start md:items-center gap-6 relative z-10">
             {/* Callsign Avatar */}
             <div className="relative">
-              <div className="w-20 h-20 rounded-2xl flex items-center justify-center text-3xl font-black font-orbitron
-                bg-gradient-to-br from-cyan-500/30 via-blue-600/30 to-purple-600/40 border-2 border-cyan-400/60 shadow-neon-cyan flex-shrink-0">
-                {(profile.displayName || user?.username || 'P')[0].toUpperCase()}
+              <div className="w-20 h-20 rounded-2xl flex items-center justify-center p-1
+                bg-gradient-to-br from-cyan-500/20 via-blue-600/20 to-purple-600/30 border-2 border-cyan-400/60 shadow-neon-cyan flex-shrink-0">
+                <ShipVisual shipClass={profile.equippedShipId?.replace('ship_', '') || 'interceptor'} size={64} animated={true} />
               </div>
               <div className="absolute -bottom-2 -right-2 px-2 py-0.5 rounded-full bg-cyan-400 text-slate-950 text-[10px] font-black font-mono uppercase">
                 LVL {profile.level}

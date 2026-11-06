@@ -21,10 +21,10 @@ export class MissionController {
    */
   static async listMissions(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
-      const userId = req.user!._id;
+      const userId = req.user ? req.user._id : null;
       const missions = await Mission.find().sort({ numericId: 1 });
-      const progress = await PlayerProgress.findOne({ userId });
-      const profile = await PlayerProfile.findOne({ userId });
+      const progress = userId ? await PlayerProgress.findOne({ userId }) : null;
+      const profile = userId ? await PlayerProfile.findOne({ userId }) : null;
 
       const playerLevel = profile ? profile.level : 1;
       const completedMap = new Map<string, { stars: number; highestScore: number }>();

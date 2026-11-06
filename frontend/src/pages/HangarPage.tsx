@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import NavBar from '../components/NavBar'
 import StarBackground from '../components/StarBackground'
+import ShipVisual from '../components/ShipVisual'
 
 interface Ship {
   _id: string
@@ -24,20 +25,70 @@ interface PlayerShip {
   upgrades: string[]
 }
 
-const SHIP_ICONS: Record<string, string> = {
-  Interceptor: '⚡',
-  Guardian: '🛡️',
-  Destroyer: '💥',
-  Phantom: '👻',
-  Nova: '🌟',
-}
+const DEFAULT_SHIPS: Ship[] = [
+  {
+    _id: 'ship_interceptor',
+    name: 'Aero-Interceptor Mark IV',
+    class: 'Interceptor',
+    description: 'High-agility strike fighter built with twin plasma thrusters and rapid-fire pulse lasers.',
+    stats: { speed: 9, fireRate: 8, damage: 18, shield: 70, health: 100 },
+    specialAbility: { name: 'Hyper Overdrive', description: 'Triples fire rate and boosts velocity for 6 seconds.', cooldown: 18 },
+    price: { credits: 0, energyCores: 0 },
+    unlockRequirement: { level: 1 },
+    tier: 1
+  },
+  {
+    _id: 'ship_guardian',
+    name: 'Aegis Guardian Vanguard',
+    class: 'Guardian',
+    description: 'Heavily armored dreadnought equipped with dual kinetic shield pylons and reinforced prow.',
+    stats: { speed: 5, fireRate: 6, damage: 24, shield: 160, health: 220 },
+    specialAbility: { name: 'Kinetic Bastion', description: 'Deploys an invulnerable energy shield absorbing 100% damage.', cooldown: 24 },
+    price: { credits: 2500, energyCores: 25 },
+    unlockRequirement: { level: 3 },
+    tier: 2
+  },
+  {
+    _id: 'ship_destroyer',
+    name: 'Oblivion Destroyer',
+    class: 'Destroyer',
+    description: 'Frontline heavy strike vessel mounting twin railgun artillery and antimatter warheads.',
+    stats: { speed: 6, fireRate: 5, damage: 42, shield: 90, health: 180 },
+    specialAbility: { name: 'Plasma Barrage', description: 'Unleashes a 360-degree radial barrage of plasma devastation.', cooldown: 22 },
+    price: { credits: 6000, energyCores: 60 },
+    unlockRequirement: { level: 5 },
+    tier: 3
+  },
+  {
+    _id: 'ship_phantom',
+    name: 'Spectre Phantom Corvette',
+    class: 'Phantom',
+    description: 'Covert void-infiltrator featuring radar-absorbing diamond armor and phase shift cloaking.',
+    stats: { speed: 8, fireRate: 7, damage: 28, shield: 80, health: 110 },
+    specialAbility: { name: 'Phase Shift', description: 'Phases into hyperspace, becoming untouchable and invisible.', cooldown: 20 },
+    price: { credits: 12000, energyCores: 120 },
+    unlockRequirement: { level: 8 },
+    tier: 4
+  },
+  {
+    _id: 'ship_nova',
+    name: 'Solaris Nova Flagship',
+    class: 'Nova',
+    description: 'Supreme fleet vanguard powered by an artificial stellar core with devastating beam arrays.',
+    stats: { speed: 7, fireRate: 9, damage: 38, shield: 180, health: 260 },
+    specialAbility: { name: 'Supernova Burst', description: 'Radiates intense coronal energy, doubling damage and firing multishots.', cooldown: 25 },
+    price: { credits: 25000, energyCores: 250 },
+    unlockRequirement: { level: 12 },
+    tier: 5
+  }
+];
 
 const SHIP_COLORS: Record<string, string> = {
   Interceptor: 'from-cyan-500 to-blue-600',
-  Guardian: 'from-green-500 to-emerald-600',
-  Destroyer: 'from-red-500 to-orange-600',
-  Phantom: 'from-purple-500 to-violet-600',
-  Nova: 'from-yellow-400 to-amber-500',
+  Guardian: 'from-blue-600 to-indigo-800',
+  Destroyer: 'from-red-600 to-orange-600',
+  Phantom: 'from-purple-600 to-violet-900',
+  Nova: 'from-amber-400 to-yellow-600',
 }
 
 const StatBar: React.FC<{ label: string; value: number; max?: number; color?: string }> = ({
@@ -55,32 +106,32 @@ const StatBar: React.FC<{ label: string; value: number; max?: number; color?: st
 const HangarPage: React.FC = () => {
   const { wallet, refreshWallet } = useAuth()
   const { addToast } = useToast()
-  const [ships, setShips] = useState<Ship[]>([])
+  const [ships, setShips] = useState<Ship[]>(DEFAULT_SHIPS)
   const [playerShips, setPlayerShips] = useState<PlayerShip[]>([])
   const [playerLevel, setPlayerLevel] = useState(1)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [actionLoading, setActionLoading] = useState<string | null>(null)
-  const [selected, setSelected] = useState<Ship | null>(null)
+  const [selected, setSelected] = useState<Ship | null>(DEFAULT_SHIPS[0])
 
   useEffect(() => {
     loadData()
   }, [])
 
   const loadData = async () => {
-    setLoading(true)
     try {
       const [shipsRes, profileRes] = await Promise.all([
-        api.listShips(),
-        api.getProfile(),
+        api.listShips().catch(() => ({ ships: DEFAULT_SHIPS, playerShips: [] })),
+        api.getProfile().catch(() => ({ profile: { level: 1 } })),
       ])
-      setShips(shipsRes.ships || [])
-      setPlayerShips(shipsRes.playerShips || [])
+      const fetchedShips = shipsRes.ships?.length ? shipsRes.ships : DEFAULT_SHIPS
+      setShips(fetchedShips)
+      setPlayerShips(shipsRes.playerShips || [{ shipId: 'ship_interceptor', isEquipped: true, level: 1, upgrades: [] }])
       setPlayerLevel(profileRes.profile?.level || 1)
-      if (shipsRes.ships?.length) setSelected(shipsRes.ships[0])
-    } catch (e: any) {
-      addToast(e.response?.data?.message || 'Failed to load hangar', 'error')
-    } finally {
-      setLoading(false)
+      if (fetchedShips.length) setSelected(prev => prev || fetchedShips[0])
+    } catch {
+      setShips(DEFAULT_SHIPS)
+      setPlayerShips([{ shipId: 'ship_interceptor', isEquipped: true, level: 1, upgrades: [] }])
+      setSelected(prev => prev || DEFAULT_SHIPS[0])
     }
   }
 
@@ -155,8 +206,8 @@ const HangarPage: React.FC = () => {
                       : 'border-white/10 bg-white/5 hover:border-white/30'
                   }`}>
                   <div className="flex items-center gap-3">
-                    <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${color} flex items-center justify-center text-2xl shadow`}>
-                      {SHIP_ICONS[ship.class] || '🚀'}
+                    <div className="w-14 h-14 rounded-xl bg-space-950/80 border border-cyan-500/30 flex items-center justify-center p-1 shadow-lg flex-shrink-0">
+                      <ShipVisual shipClass={ship.class} size={48} animated={false} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
@@ -183,15 +234,15 @@ const HangarPage: React.FC = () => {
             const equipped = isEquipped(selected._id)
             const locked = !meetsLevel(selected)
             const affordable = canAfford(selected)
-            const color = SHIP_COLORS[selected.class] || 'from-gray-500 to-gray-700'
             const busy = actionLoading === selected._id
 
             return (
               <div className="lg:col-span-2 glass-panel p-6 rounded-2xl border border-white/10">
                 {/* Header */}
                 <div className="flex items-start gap-6 mb-6">
-                  <div className={`w-24 h-24 rounded-2xl bg-gradient-to-br ${color} flex items-center justify-center text-5xl shadow-xl`}>
-                    {SHIP_ICONS[selected.class] || '🚀'}
+                  <div className="w-32 h-32 rounded-2xl bg-gradient-to-b from-space-900 to-black border border-cyan-500/40 flex items-center justify-center p-2 shadow-2xl relative overflow-hidden flex-shrink-0">
+                    <div className="absolute inset-0 bg-radial-glow opacity-30 pointer-events-none" />
+                    <ShipVisual shipClass={selected.class} size={112} animated={true} />
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-3 flex-wrap">

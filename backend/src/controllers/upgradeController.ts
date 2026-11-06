@@ -11,9 +11,9 @@ export class UpgradeController {
    */
   static async listUpgrades(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
-      const userId = req.user!._id;
+      const userId = req.user ? req.user._id : null;
       const upgrades = await Upgrade.find();
-      const profile = await PlayerProfile.findOne({ userId });
+      const profile = userId ? await PlayerProfile.findOne({ userId }) : null;
 
       const equippedUpgrades = profile?.equippedUpgrades || {
         weapon: 1,

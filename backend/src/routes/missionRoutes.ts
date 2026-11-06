@@ -1,13 +1,15 @@
 import { Router } from 'express';
 import { MissionController } from '../controllers/missionController';
-import { authenticateToken } from '../middlewares/authMiddleware';
+import { authenticateToken, optionalAuth } from '../middlewares/authMiddleware';
 
 const router = Router();
 
-router.use(authenticateToken);
-router.get('/', MissionController.listMissions);
-router.get('/:id', MissionController.getMissionById);
-router.post('/:id/start', MissionController.startMission);
-router.post('/:id/complete', MissionController.completeMission);
+// Publicly readable missions catalog with user overlay if authenticated
+router.get('/', optionalAuth, MissionController.listMissions);
+router.get('/:id', optionalAuth, MissionController.getMissionById);
+
+// Gameplay sessions require authenticated user
+router.post('/:id/start', authenticateToken, MissionController.startMission);
+router.post('/:id/complete', authenticateToken, MissionController.completeMission);
 
 export default router;
